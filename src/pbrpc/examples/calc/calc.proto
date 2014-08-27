@@ -1,0 +1,15 @@
+option cc_generic_services = true;
+
+package pbrpc.examples.calc;
+
+message CalcRequest {
+    repeated int32 nums = 1;
+}
+
+message CalcResponse {
+    required int32 result = 1;
+}
+
+service CalcService {
+    rpc Calc(CalcRequest) returns (CalcResponse);
+}

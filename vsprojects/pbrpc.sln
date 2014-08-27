@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pbrpc", "pbrpc.vcxproj", "{19B3FC06-FF34-4423-BF48-4D9B71BFD4E3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B562BAC4-A01D-4162-B7A8-55282864F936}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "calcclient", "examples\calcclient.vcxproj", "{AE7E233F-0B4B-4C79-B98D-1504C05F1295}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "calcserver", "examples\calcserver.vcxproj", "{6C27AF89-B642-420C-9DCA-1B524A83D94D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{19B3FC06-FF34-4423-BF48-4D9B71BFD4E3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{19B3FC06-FF34-4423-BF48-4D9B71BFD4E3}.Debug|Win32.Build.0 = Debug|Win32
+		{19B3FC06-FF34-4423-BF48-4D9B71BFD4E3}.Release|Win32.ActiveCfg = Release|Win32
+		{19B3FC06-FF34-4423-BF48-4D9B71BFD4E3}.Release|Win32.Build.0 = Release|Win32
+		{AE7E233F-0B4B-4C79-B98D-1504C05F1295}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AE7E233F-0B4B-4C79-B98D-1504C05F1295}.Debug|Win32.Build.0 = Debug|Win32
+		{AE7E233F-0B4B-4C79-B98D-1504C05F1295}.Release|Win32.ActiveCfg = Release|Win32
+		{AE7E233F-0B4B-4C79-B98D-1504C05F1295}.Release|Win32.Build.0 = Release|Win32
+		{6C27AF89-B642-420C-9DCA-1B524A83D94D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6C27AF89-B642-420C-9DCA-1B524A83D94D}.Debug|Win32.Build.0 = Debug|Win32
+		{6C27AF89-B642-420C-9DCA-1B524A83D94D}.Release|Win32.ActiveCfg = Release|Win32
+		{6C27AF89-B642-420C-9DCA-1B524A83D94D}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AE7E233F-0B4B-4C79-B98D-1504C05F1295} = {B562BAC4-A01D-4162-B7A8-55282864F936}
+		{6C27AF89-B642-420C-9DCA-1B524A83D94D} = {B562BAC4-A01D-4162-B7A8-55282864F936}
+	EndGlobalSection
+EndGlobal

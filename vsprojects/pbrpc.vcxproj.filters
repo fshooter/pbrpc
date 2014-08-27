@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="src.pbrpc">
+      <UniqueIdentifier>{773e797d-5617-4e49-9f27-d74b8cb6b14d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src.pbrpc\client">
+      <UniqueIdentifier>{bd3ea5ab-3e6d-41ad-867b-79971a8dc7f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src.pbrpc\common">
+      <UniqueIdentifier>{703d9ec0-7a77-45e5-97c1-baa2575a4518}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src.pbrpc\proto">
+      <UniqueIdentifier>{c055be2b-7099-479f-98b4-58caad8adc11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src.pbrpc\server">
+      <UniqueIdentifier>{67e01a40-98fc-45cc-822a-86600d7f2925}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\pbrpc\proto\message.pb.h">
+      <Filter>src.pbrpc\proto</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\server\rpclistener.h">
+      <Filter>src.pbrpc\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\types.h">
+      <Filter>src.pbrpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\error.h">
+      <Filter>src.pbrpc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\common\sentry.h">
+      <Filter>src.pbrpc\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\common\listhead.h">
+      <Filter>src.pbrpc\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\server\wintcprpclistenerimpl.h">
+      <Filter>src.pbrpc\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\common\log.h">
+      <Filter>src.pbrpc\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\client\simpletcpchannelimpl.h">
+      <Filter>src.pbrpc\client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\server\wintcprpclistener.h">
+      <Filter>src.pbrpc\server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\client\simpletcpchannel.h">
+      <Filter>src.pbrpc\client</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pbrpc\server\rpcserver.h">
+      <Filter>src.pbrpc\server</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\pbrpc\proto\message.pb.cc">
+      <Filter>src.pbrpc\proto</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbrpc\server\wintcprpclistenerimpl.cc">
+      <Filter>src.pbrpc\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbrpc\common\listhead.cc">
+      <Filter>src.pbrpc\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbrpc\common\log.cc">
+      <Filter>src.pbrpc\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbrpc\client\simpletcpchannelimpl.cc">
+      <Filter>src.pbrpc\client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbrpc\server\wintcprpclistener.cc">
+      <Filter>src.pbrpc\server</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbrpc\client\simpletcpchannel.cc">
+      <Filter>src.pbrpc\client</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pbrpc\server\rpcserver.cc">
+      <Filter>src.pbrpc\server</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\message.proto" />
+  </ItemGroup>
+</Project>
