@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <pbrpc/config.h>
 #include "log.h"
 
 namespace pbrpc {

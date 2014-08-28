@@ -1,17 +1,23 @@
+/*!
+ * @file wintcprpclistenerimpl.cc
+ * @brief WinTcpRpcListenerImpl类实现文件
+ */
 #include <WinSock2.h>
 #include <mswsock.h>
 #include <google/protobuf/stubs/common.h>
+#include <pbrpc/config.h>
 #include <pbrpc/common/log.h>
 #include "wintcprpclistenerimpl.h"
 
-#define MAX_PARALLEL_REQUESTS_PER_SOCKET 100
-#define MAX_OUTSTANDING_METHOD_CALLS 10000
-#define MAX_PACKET_SIZE 1024 * 1024
+#define MAX_OUTSTANDING_METHOD_CALLS 10000 ///< 最多同时进行的Rpc调用数量
+#define MAX_PACKET_SIZE 1024 * 1024 ///< 每个帧的最大大小
 
 namespace pbrpc {
 namespace server {
 
 using namespace ::pbrpc::common;
+
+bool WinTcpRpcListenerImpl::isWsaStartupCalled_ = false;
 
 WinTcpRpcListenerImpl::WinTcpRpcListenerImpl() : status_(Status::UNINITIALIZED)
 {
@@ -27,16 +33,20 @@ WinTcpRpcListenerImpl::~WinTcpRpcListenerImpl()
         if (Stop() != Error::E_OK)
             Fetal("Stop Error");
     }
-
-    if (status_ == Status::PAUSED) {
-        WSACleanup();
-    }
 }
 
 Error WinTcpRpcListenerImpl::Init(uint32_t ip, uint16_t port)
 {
     if (status_ != Status::UNINITIALIZED)
         return Error::E_INVALID_STATUS;
+
+    if (!isWsaStartupCalled_) {
+        WORD wVersionRequested = MAKEWORD(2, 2);
+        WSADATA wsaData;
+        if (WSAStartup(wVersionRequested, &wsaData) != 0)
+            return Error::E_WIN32_ERR;
+        isWsaStartupCalled_ = true;
+    }
 
     ip_ = ip;
     port_ = port;
@@ -48,12 +58,7 @@ Error WinTcpRpcListenerImpl::Init(uint32_t ip, uint16_t port)
     getAcceptExSockaddrsRoutine_ = NULL;
     currentAcceptSock_ = INVALID_SOCKET;
     ListHeadInitailize(&outstandingMethodCalls_);
-
-    WORD wVersionRequested = MAKEWORD(2, 2);
-    WSADATA wsaData;
-
-    if (WSAStartup(wVersionRequested, &wsaData) != 0)
-        return Error::E_WIN32_ERR;
+    outstandingMethodCallsNum_ = 0;
 
     status_ = Status::PAUSED;
 
@@ -85,23 +90,27 @@ Error WinTcpRpcListenerImpl::Start()
 
     Error err = Error::E_OK;
 
+    // 创建完成端口
     completionPort_ = CreateIoCompletionPort(INVALID_HANDLE_VALUE, NULL, NULL, 1);
     if (completionPort_ == NULL) {
         err = Error::E_WIN32_ERR;
         goto cleanup;
     }
     
+    // 创建监听SOCKET
     sock_ = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
     if (sock_ == INVALID_SOCKET) {
         err = Error::E_WIN32_ERR;
         goto cleanup;
     }
 
+    // 将SOCKET绑定到完成端口
     if (!CreateIoCompletionPort((HANDLE)sock_, completionPort_, NULL, 1)) {
         err = Error::E_WIN32_ERR;
         goto cleanup;
     }
 
+    // 绑定并开始监听
     sockaddr_in sa;
     sa.sin_family = AF_INET;
     sa.sin_addr.S_un.S_addr = ip_;
@@ -113,6 +122,7 @@ Error WinTcpRpcListenerImpl::Start()
         goto cleanup;
     }
 
+    // 取得必要的函数地址
     if (!acceptExRoutine_) {
         GUID guidAcceptEx = WSAID_ACCEPTEX;
         DWORD bytesRet = 0;
@@ -137,6 +147,7 @@ Error WinTcpRpcListenerImpl::Start()
         }
     }
 
+    // 创建IO线程
     thread_ = CreateThread(NULL, 0,
         &WinTcpRpcListenerImpl::WorkerThreadRoutineStub, this,
         0, NULL);
@@ -145,8 +156,10 @@ Error WinTcpRpcListenerImpl::Start()
         goto cleanup;
     }
 
+    // 初始化成功了,切换状态
     status_ = Status::RUNNING;
 
+    // 开始异步Accept
     DoAccept();
 
 cleanup:
@@ -172,6 +185,12 @@ Error WinTcpRpcListenerImpl::Stop()
     if (status_ != Status::RUNNING)
         return Error::E_INVALID_STATUS;
     
+    //
+    // 首先切换状态到 STOPPING_1 并发送退出消息到IO线程
+    // 这样IO线程就不会接受新的Rpc请求了
+    // 然后我们一直等待直到所有已建立的Rpc请求完成
+    //
+
     status_ = Status::STOPPING_1;
 
     PerIoDataStopping* stoppingData = new PerIoDataStopping;
@@ -179,7 +198,7 @@ Error WinTcpRpcListenerImpl::Stop()
     stoppingData->type = IoType::LISTENER_STOPPING;
 
     if (!PostQueuedCompletionStatus(completionPort_, 0, NULL, &stoppingData->overlapped))
-        Fetal("Error\n");
+        Fetal("PostQueuedCompletionStatus Error\n");
 
     while (currentAcceptSock_ != INVALID_SOCKET)
         ::Sleep(100);
@@ -187,11 +206,21 @@ Error WinTcpRpcListenerImpl::Stop()
     while (!ListHeadEmpty(&outstandingMethodCalls_))
         ::Sleep(100);
 
+    //
+    // 这时候可以切换到 STOPPING_2 了
+    // IO线程在发现此状态时会退出
+    // 我们等待IO线程退出
+    //
+
     status_ = Status::STOPPING_2;
 
     WaitForSingleObject(thread_, INFINITE);
     CloseHandle(thread_);
     thread_ = NULL;
+
+    //
+    // 这时候可以释放其他的资源了
+    //
 
     CloseHandle(completionPort_);
     completionPort_ = NULL;
@@ -233,7 +262,7 @@ void WinTcpRpcListenerImpl::DoAccept()
     }
 
     switch (WSAGetLastError()) {
-    case ERROR_IO_PENDING:
+    case WSA_IO_PENDING:
         if (CreateIoCompletionPort((HANDLE)acceptSock, completionPort_, NULL, 0) == NULL) {
             Fetal("Fetal Error In DoAccept\n");
         }
@@ -250,22 +279,21 @@ void WinTcpRpcListenerImpl::OnAcceptFinish(bool success, PerIoDataAccept* accept
 {
     assert(status_ == Status::RUNNING || status_ == Status::STOPPING_1);
 
-    Status statusSnap = status_;
-
     SOCKET sock = acceptData->sock;
 
-    if (!success) {
-        goto cleanup;
+    if (status_ == Status::STOPPING_1) {
+        delete acceptData;
+        closesocket(sock);
+        currentAcceptSock_ = INVALID_SOCKET;
+        return;
     }
 
-    if (statusSnap == Status::STOPPING_1) {
-        success = false;
-        goto cleanup;
+    if (!success) {
+        goto err;
     }
 
     if (setsockopt(sock, SOL_SOCKET, SO_UPDATE_ACCEPT_CONTEXT, (char *)&sock_, sizeof(sock_)) != 0) {
-        success = false;
-        goto cleanup;
+        goto err;
     }
 
     sockaddr *localAddr, *remoteAddr;
@@ -280,39 +308,38 @@ void WinTcpRpcListenerImpl::OnAcceptFinish(bool success, PerIoDataAccept* accept
     DWORD remoteAddrStrLen = sizeof(remoteAddrStr);
 
     if (WSAAddressToString(localAddr, localAddrLen, NULL, localAddrStr, &localAddrStrLen) != 0) {
-        success = false;
-        goto cleanup;
+        goto err;
     }
     if (WSAAddressToString(remoteAddr, remoteAddrLen, NULL, remoteAddrStr, &remoteAddrStrLen) != 0) {
-        success = false;
-        goto cleanup;
+        goto err;
     }
     TraceInfo("Accept, LocalAddr=%s, RemoteAddr=%s\n", localAddrStr, remoteAddrStr);
 
+    delete acceptData;
+    acceptData = NULL;
+
+    // accept成功了,建立 SocketContext
     SocketContext* socketContext = new SocketContext;
     socketContext->sock = sock;
     ListHeadInitailize(&socketContext->outstandingMethodCalls);
 
     DoRecv(socketContext);
+    DoAccept();
+    return;
 
-cleanup:
-
-    delete acceptData;
-
-    if (!success) {
-        closesocket(sock);
+err:
+    if (acceptData) {
+        delete acceptData;
     }
-
-    if (statusSnap != Status::STOPPING_1)
-        DoAccept();
-    else
-        currentAcceptSock_ = INVALID_SOCKET;
+    closesocket(sock);
+    DoAccept();
 }
 
 void WinTcpRpcListenerImpl::DoRecv(SocketContext* socketContext)
 {
     assert(status_ == Status::RUNNING || status_ == Status::STOPPING_1);
 
+    /* 对于一个空闲的 SocketContext, 创建一个 RECVING 状态的 Omc */
     Omc* omc = new Omc;
     omc->status = OmcStatus::RECVING;
     omc->socketContext = socketContext;
@@ -321,6 +348,7 @@ void WinTcpRpcListenerImpl::DoRecv(SocketContext* socketContext)
     ListHeadInsertTail(&socketContext->outstandingMethodCalls,
         &omc->outstandingMethodCallsSocketEntry);
     ListHeadInsertTail(&outstandingMethodCalls_, &omc->outstandingMethodCallsEntry);
+    outstandingMethodCallsNum_ += 1;
 
     DoRecv(omc);
 }
@@ -337,14 +365,20 @@ void WinTcpRpcListenerImpl::DoRecv(Omc* omc)
     recvData->type = IoType::RECV;
     recvData->omc = omc;
 
+    // OmcRecving::requestSize == 0说明我们还没有接收到帧长度
+    // 那么首先接收帧长度
+    // 否则接收帧数据
     WSABUF buf = { 0 };
     if (!omc->specific.recving->requestSize) {
+        // 接收帧长度
         omc->specific.recving->request.resize(sizeof(uint32_t));
         buf.buf = (char*)omc->specific.recving->request.c_str();
         buf.len = sizeof(uint32_t);
     }
     else {
+        // 已经接收到了帧长度,检验长度是否合法
         if (omc->specific.recving->requestSize > MAX_PACKET_SIZE) {
+            // 不合法直接关闭
             shutdown(omc->socketContext->sock, SD_BOTH);
             CloseOmc(omc);
             delete recvData;
@@ -372,67 +406,90 @@ void WinTcpRpcListenerImpl::OnRecvFinish(bool success, PerIoDataRecv* recvData)
     Omc* omc = recvData->omc;
     SocketContext* socketContext = omc->socketContext;
 
+    int id;
+    std::string reason;
+
     assert(status_ == Status::RUNNING || status_ == Status::STOPPING_1);
     assert(omc->status == OmcStatus::RECVING);
 
     if (!success)
-        goto cleanup;
+        goto closechannel;
 
     if (status_ == Status::STOPPING_1) {
-        success = false;
-        goto cleanup;
+        goto closechannel;
     }
 
     DWORD bytesTransfer = 0;
     DWORD flags = 0;
     if (!WSAGetOverlappedResult(socketContext->sock, &recvData->overlapped,
         &bytesTransfer, FALSE, &flags)) {
-        success = false;
-        goto cleanup;
+        goto closechannel;
     }
 
+    delete recvData;
+    recvData = NULL;
+
     if (omc->specific.recving->requestSize == 0) {
+        // 我们接受的是帧长度
         if (bytesTransfer != sizeof(uint32_t)) {
-            success = false;
-            goto cleanup;
+            goto closechannel;
         }
         omc->specific.recving->requestSize = *(uint32_t*)omc->specific.recving->request.c_str();
         DoRecv(omc);
+        return;
     }
     else {
+        // 我们接受的是帧数据
         if (bytesTransfer != omc->specific.recving->requestSize) {
-            success = false;
-            goto cleanup;
+            goto closechannel;
         }
 
+        // 解析请求消息
         RequestMsg requestMsg;
         if (!requestMsg.ParseFromString(omc->specific.recving->request)) {
             success = false;
-            goto cleanup;
+            goto closechannel;
         }
 
+        id = requestMsg.id();
+
         if (requestMsg.type() == RequestMsgType::NORMAL) {
-            const NormalRequestBody& normalRequest = requestMsg.normal_request();
-            Service* service = methodCallback_->QueryService(normalRequest.service_name());
-            if (!service) {
-                success = false;
-                goto cleanup;
+
+            // 处理普通请求
+
+            if (outstandingMethodCallsNum_ > MAX_OUTSTANDING_METHOD_CALLS) {
+                reason = "Server Busy";
+                goto sendfailresponse;
             }
-            const MethodDescriptor* method = service->GetDescriptor()->FindMethodByName(normalRequest.method_name());
+
+            if (!requestMsg.has_service_name() ||
+                !requestMsg.has_method_name() ||
+                !requestMsg.has_request_body()) {
+                reason = "Invalid Request";
+                goto sendfailresponse;
+            }
+
+            Service* service = methodCallback_->QueryService(requestMsg.service_name());
+            if (!service) {
+                reason = "No Such Service";
+                goto sendfailresponse;
+            }
+            const MethodDescriptor* method = service->GetDescriptor()->FindMethodByName(requestMsg.method_name());
             if (!method) {
-                success = false;
-                goto cleanup;
+                reason = "No Such Method";
+                goto sendfailresponse;
             }
             Message* realRequest = service->GetRequestPrototype(method).New();
             assert(realRequest);
-            if (!realRequest->ParseFromString(normalRequest.request_body())) {
+            if (!realRequest->ParseFromString(requestMsg.request_body())) {
                 delete realRequest;
-                success = false;
-                goto cleanup;
+                reason = "Invalid Request";
+                goto sendfailresponse;
             }
             Message* realResponse = service->GetResponsePrototype(method).New();
             assert(realResponse);
 
+            // 转换 Omc 到 PROCESSING 状态
             delete omc->specific.recving;
             omc->status = OmcStatus::PROCESSING;
             omc->specific.processing = new OmcProcessing;
@@ -440,31 +497,77 @@ void WinTcpRpcListenerImpl::OnRecvFinish(bool success, PerIoDataRecv* recvData)
             omc->specific.processing->request = realRequest;
             omc->specific.processing->response = realResponse;
 
+            // 开始接收下一个请求
+            // DoRecv 不能在 OnMethodCall 之后调用
+            // 因为OnMethodCall调用之后我们就交出了Omc的使用权
             DoRecv(omc->socketContext);
 
+            // 执行回调
             methodCallback_->OnMethodCall(service, method,
                 &omc->specific.processing->controller,
                 omc->specific.processing->request,
                 omc->specific.processing->response,
                 NewCallback(this, &WinTcpRpcListenerImpl::OnMethodCallDoneThreadSafe, omc));
+
+            return;
         }
         else if (requestMsg.type() == RequestMsgType::CANCEL) {
+
+            // 处理取消请求
+
+            // 依次遍历当前Socket上的所有 PROCESSING 状态的 Omc
+            for (ListHead* entry = socketContext->outstandingMethodCalls.next;
+                entry != &socketContext->outstandingMethodCalls;
+                entry = entry->next)
+            {
+                Omc* pendingOmc = CONTAINING_RECORD(entry, Omc, outstandingMethodCallsSocketEntry);
+                if (pendingOmc->status == OmcStatus::PROCESSING
+                    && pendingOmc->specific.processing->id == id)
+                {
+                    pendingOmc->specific.processing->controller.StartCancel();
+                    break;
+                }
+            }
+
+            // 处理完取消请求之后,我们需要继续在此 Omc 上接收其他Rpc调用
             omc->specific.recving->requestSize = 0;
             omc->specific.recving->request.clear();
             DoRecv(omc);
+            return;
         }
         else {
-            success = false;
-            goto cleanup;
+
+            // 非法请求
+
+            goto closechannel;
         }
     }
 
-cleanup:
-    free(recvData);
-    if (!success) {
-        shutdown(socketContext->sock, SD_BOTH);
-        CloseOmc(omc);
+closechannel:
+    if (recvData) {
+        delete recvData;
     }
+    shutdown(socketContext->sock, SD_BOTH);
+    CloseOmc(omc);
+    return;
+
+sendfailresponse:
+    if (recvData) {
+        delete recvData;
+    }
+    ResponseMsg response;
+    response.set_id(id);
+    response.set_type(ResponseMsgType::FAIL);
+    response.set_error_text(reason);
+    delete omc->specific.recving;
+    omc->status = OmcStatus::SENDING;
+    omc->specific.sending = new OmcSending;
+    omc->specific.sending->frameHeaderSended = false;
+    if (!response.SerializeToString(&omc->specific.sending->response))
+        goto closechannel;
+    omc->specific.sending->bytesLeftToSend = omc->specific.sending->response.size();
+    DoSend(omc);
+    return;
 }
 
 void WinTcpRpcListenerImpl::DoSend(Omc* omc)
@@ -483,6 +586,8 @@ void WinTcpRpcListenerImpl::DoSend(Omc* omc)
     memset(buf, 0, sizeof(buf));
     int bufCount = 1;
 
+    // 如果没有发送过帧长度,那么发送帧长度+帧数据.
+    // 否则只发送帧数据, WSASend有可能只发送了部分数据,因此从上次遗留的部分接着发
     if (!omc->specific.sending->frameHeaderSended) {
         bufCount = 2;
         buf[0].buf = (char*)&omc->specific.sending->bytesLeftToSend;
@@ -517,7 +622,6 @@ void WinTcpRpcListenerImpl::OnSendFinish(bool success, PerIoDataSend* sendData)
     assert(omc->status == OmcStatus::SENDING);
 
     if (!success) {
-        TraceWarning("OnSendFinish! Send Failed\n");
         goto err;
     }
 
@@ -528,10 +632,14 @@ void WinTcpRpcListenerImpl::OnSendFinish(bool success, PerIoDataSend* sendData)
         goto err;
     }
 
+    delete sendData;
+    sendData = NULL;
+
     if (!omcSending->frameHeaderSended && bytesTransfer < sizeof(uint32_t)) {
         goto err;
     }
 
+    // 计算还有多少数据没有发送
     if (!omcSending->frameHeaderSended) {
         omcSending->frameHeaderSended = true;
         omcSending->bytesLeftToSend -= (bytesTransfer - sizeof(uint32_t));
@@ -541,31 +649,36 @@ void WinTcpRpcListenerImpl::OnSendFinish(bool success, PerIoDataSend* sendData)
     }
 
     if (omcSending->bytesLeftToSend != 0) {
-        delete sendData;
+        // 还没发送完,接着发
         return DoSend(omc);
     }
 
-    delete sendData;
+    // 发送完了,这次Rpc处理过程也就结束了,关闭 Omc
     CloseOmc(omc);
     return;
 
 err:
-
-    delete sendData;
+    if (sendData) {
+        delete sendData;
+    }
     shutdown(socketContext->sock, SD_BOTH);
     CloseOmc(omc);
 }
 
 void WinTcpRpcListenerImpl::CloseOmc(Omc* omc)
 {
+    // 首先从活动列表中移除 Omc
     ListHeadRemove(&omc->outstandingMethodCallsEntry);
+    outstandingMethodCallsNum_ -= 1;
     ListHeadRemove(&omc->outstandingMethodCallsSocketEntry);
 
+    // 如果 SocketContext 上的所有 Omc 都完成了,删除SocketContext
     if (ListHeadEmpty(&omc->socketContext->outstandingMethodCalls)) {
         closesocket(omc->socketContext->sock);
         delete omc->socketContext;
     }
 
+    // 根据 Omc 的状态释放内容
     switch (omc->status) {
     case OmcStatus::RECVING:
         delete omc->specific.recving;
@@ -575,6 +688,7 @@ void WinTcpRpcListenerImpl::CloseOmc(Omc* omc)
             delete omc->specific.processing->request;
         if (omc->specific.processing->response)
             delete omc->specific.processing->response;
+        delete omc->specific.processing;
         break;
     case OmcStatus::SENDING:
         delete omc->specific.sending;
@@ -602,7 +716,7 @@ void WinTcpRpcListenerImpl::OnMethodCallDone(PerIoDataMethodCallDone* doneData)
     if (omcProcessing->controller.Failed()) {
         responseMsg.set_id(omcProcessing->id);
         responseMsg.set_type(ResponseMsgType::FAIL);
-        responseMsg.mutable_error_response()->set_error_text(
+        responseMsg.set_error_text(
             omcProcessing->controller.ErrorText());
     }
     else {
@@ -610,19 +724,20 @@ void WinTcpRpcListenerImpl::OnMethodCallDone(PerIoDataMethodCallDone* doneData)
         if (!omcProcessing->response->SerializePartialToString(&responseBytes)) {
             responseMsg.set_id(omcProcessing->id);
             responseMsg.set_type(ResponseMsgType::FAIL);
-            responseMsg.mutable_error_response()->set_error_text(
+            responseMsg.set_error_text(
                 "Response Serial Error");
         }
         else {
             responseMsg.set_id(omcProcessing->id);
             responseMsg.set_type(ResponseMsgType::SUCCESS);
-            responseMsg.mutable_success_response()->set_response_body(
+            responseMsg.set_response_body(
                 responseBytes);
         }
     }
 
     delete omcProcessing->request;
     delete omcProcessing->response;
+    delete omcProcessing;
 
     omc->status = OmcStatus::SENDING;
     omc->specific.sending = new OmcSending;
@@ -659,6 +774,7 @@ void WinTcpRpcListenerImpl::OnDataStopping(PerIoDataStopping* stopData)
         closesocket(currentAcceptSock_);
     }
     
+    // 关闭所有处于 RECVING 状态的omc
     for (ListHead* current = outstandingMethodCalls_.next;
         current != &outstandingMethodCalls_;
         current = current->next)

@@ -1,6 +1,11 @@
+/*!
+ * @file rpcserver.h
+ * @brief RPC服务器实现文件
+ */
 #include <Windows.h>
 #include <map>
 #include <google/protobuf/service.h>
+#include <pbrpc/config.h>
 #include <pbrpc/common/listhead.h>
 #include <pbrpc/common/log.h>
 #include <pbrpc/types.h>
@@ -14,7 +19,14 @@ namespace server {
 using namespace ::google::protobuf;
 using namespace ::pbrpc::common;
 
+/// @brief Rpc服务器实现类
+///
+/// 本类维护一个线程池,一旦接收到 RpcListener 的Rpc回调,
+/// 便生成一个MethodCallCtx放入到请求队列中,线程池中的线程不断从请求队列中取出请求并执行
+/// @note 使用者不应当使用此类,使用 RpcServer
 class RpcServer::Impl : public RpcListener::MethodCallback {
+
+    /// 回调请求上下文,目前只是保存了请求回调的各个参数
     struct MethodCallCtx {
         ListHead next;
         RpcController* controller;
@@ -24,10 +36,12 @@ class RpcServer::Impl : public RpcListener::MethodCallback {
         Message* response;
         Closure* done;
     };
+
+    /// RpcServer的状态
     enum Status {
-        UNINITIALIIED,
-        PAUSED,
-        RUNNING
+        UNINITIALIIED, //!< 未初始化
+        PAUSED, //!< 暂停中
+        RUNNING //!< 运行中
     };
 public:
     Impl();
@@ -69,17 +83,17 @@ private:
     std::vector<HANDLE> threads_;
 
     RpcListener* listener_;
+
     std::map<std::string, Service*> services_;
+    CRITICAL_SECTION servicesLock_;
 
     HANDLE methodCallsSemaphore_;
     CRITICAL_SECTION methodCallsLock_;
     ListHead methodCalls_;
 };
 
-RpcServer::Impl::Impl() : status_(Status::UNINITIALIIED), exitThread_(false),
-listener_(NULL), methodCallsSemaphore_(NULL)
+RpcServer::Impl::Impl() : status_(Status::UNINITIALIIED)
 {
-    ListHeadInitailize(&methodCalls_);
 }
 
 RpcServer::Impl::~Impl() {
@@ -90,6 +104,7 @@ RpcServer::Impl::~Impl() {
     if (status_ == Status::PAUSED) {
         CloseHandle(methodCallsSemaphore_);
         DeleteCriticalSection(&methodCallsLock_);
+        DeleteCriticalSection(&servicesLock_);
     }
     assert(ListHeadEmpty(&methodCalls_));
 }
@@ -100,6 +115,9 @@ Error RpcServer::Impl::Init(RpcListener* listener)
         return Error::E_INVALID_STATUS;
 
     Error err;
+
+    exitThread_ = false;
+    ListHeadInitailize(&methodCalls_);
     
     listener_ = listener;
 
@@ -114,6 +132,7 @@ Error RpcServer::Impl::Init(RpcListener* listener)
     }
 
     InitializeCriticalSection(&methodCallsLock_);
+    InitializeCriticalSection(&servicesLock_);
 
     status_ = Status::PAUSED;
 
@@ -125,7 +144,7 @@ Error RpcServer::Impl::RegisterService(Service* service)
     if (status_ != Status::PAUSED)
         return Error::E_INVALID_STATUS;
 
-    services_[service->GetDescriptor()->full_name()] = service;
+    services_[service->GetDescriptor()->name()] = service;
     return Error::E_OK;
 }
 

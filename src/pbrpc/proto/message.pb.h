@@ -35,10 +35,7 @@ void  protobuf_AddDesc_message_2eproto();
 void protobuf_AssignDesc_message_2eproto();
 void protobuf_ShutdownFile_message_2eproto();
 
-class NormalRequestBody;
 class RequestMsg;
-class SuccessResponseBody;
-class FailResponseBody;
 class ResponseMsg;
 
 enum RequestMsgType {
@@ -80,123 +77,6 @@ inline bool ResponseMsgType_Parse(
     ResponseMsgType_descriptor(), name, value);
 }
 // ===================================================================
-
-class NormalRequestBody : public ::google::protobuf::Message {
- public:
-  NormalRequestBody();
-  virtual ~NormalRequestBody();
-
-  NormalRequestBody(const NormalRequestBody& from);
-
-  inline NormalRequestBody& operator=(const NormalRequestBody& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const NormalRequestBody& default_instance();
-
-  void Swap(NormalRequestBody* other);
-
-  // implements Message ----------------------------------------------
-
-  NormalRequestBody* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const NormalRequestBody& from);
-  void MergeFrom(const NormalRequestBody& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // required string service_name = 1;
-  inline bool has_service_name() const;
-  inline void clear_service_name();
-  static const int kServiceNameFieldNumber = 1;
-  inline const ::std::string& service_name() const;
-  inline void set_service_name(const ::std::string& value);
-  inline void set_service_name(const char* value);
-  inline void set_service_name(const char* value, size_t size);
-  inline ::std::string* mutable_service_name();
-  inline ::std::string* release_service_name();
-  inline void set_allocated_service_name(::std::string* service_name);
-
-  // required string method_name = 2;
-  inline bool has_method_name() const;
-  inline void clear_method_name();
-  static const int kMethodNameFieldNumber = 2;
-  inline const ::std::string& method_name() const;
-  inline void set_method_name(const ::std::string& value);
-  inline void set_method_name(const char* value);
-  inline void set_method_name(const char* value, size_t size);
-  inline ::std::string* mutable_method_name();
-  inline ::std::string* release_method_name();
-  inline void set_allocated_method_name(::std::string* method_name);
-
-  // optional bytes request_body = 10;
-  inline bool has_request_body() const;
-  inline void clear_request_body();
-  static const int kRequestBodyFieldNumber = 10;
-  inline const ::std::string& request_body() const;
-  inline void set_request_body(const ::std::string& value);
-  inline void set_request_body(const char* value);
-  inline void set_request_body(const void* value, size_t size);
-  inline ::std::string* mutable_request_body();
-  inline ::std::string* release_request_body();
-  inline void set_allocated_request_body(::std::string* request_body);
-
-  // @@protoc_insertion_point(class_scope:pbrpc.proto.NormalRequestBody)
- private:
-  inline void set_has_service_name();
-  inline void clear_has_service_name();
-  inline void set_has_method_name();
-  inline void clear_has_method_name();
-  inline void set_has_request_body();
-  inline void clear_has_request_body();
-
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
-  ::std::string* service_name_;
-  ::std::string* method_name_;
-  ::std::string* request_body_;
-
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
-
-  friend void  protobuf_AddDesc_message_2eproto();
-  friend void protobuf_AssignDesc_message_2eproto();
-  friend void protobuf_ShutdownFile_message_2eproto();
-
-  void InitAsDefaultInstance();
-  static NormalRequestBody* default_instance_;
-};
-// -------------------------------------------------------------------
 
 class RequestMsg : public ::google::protobuf::Message {
  public:
@@ -266,14 +146,41 @@ class RequestMsg : public ::google::protobuf::Message {
   inline ::pbrpc::proto::RequestMsgType type() const;
   inline void set_type(::pbrpc::proto::RequestMsgType value);
 
-  // optional .pbrpc.proto.NormalRequestBody normal_request = 10;
-  inline bool has_normal_request() const;
-  inline void clear_normal_request();
-  static const int kNormalRequestFieldNumber = 10;
-  inline const ::pbrpc::proto::NormalRequestBody& normal_request() const;
-  inline ::pbrpc::proto::NormalRequestBody* mutable_normal_request();
-  inline ::pbrpc::proto::NormalRequestBody* release_normal_request();
-  inline void set_allocated_normal_request(::pbrpc::proto::NormalRequestBody* normal_request);
+  // optional string service_name = 10;
+  inline bool has_service_name() const;
+  inline void clear_service_name();
+  static const int kServiceNameFieldNumber = 10;
+  inline const ::std::string& service_name() const;
+  inline void set_service_name(const ::std::string& value);
+  inline void set_service_name(const char* value);
+  inline void set_service_name(const char* value, size_t size);
+  inline ::std::string* mutable_service_name();
+  inline ::std::string* release_service_name();
+  inline void set_allocated_service_name(::std::string* service_name);
+
+  // optional string method_name = 11;
+  inline bool has_method_name() const;
+  inline void clear_method_name();
+  static const int kMethodNameFieldNumber = 11;
+  inline const ::std::string& method_name() const;
+  inline void set_method_name(const ::std::string& value);
+  inline void set_method_name(const char* value);
+  inline void set_method_name(const char* value, size_t size);
+  inline ::std::string* mutable_method_name();
+  inline ::std::string* release_method_name();
+  inline void set_allocated_method_name(::std::string* method_name);
+
+  // optional bytes request_body = 12;
+  inline bool has_request_body() const;
+  inline void clear_request_body();
+  static const int kRequestBodyFieldNumber = 12;
+  inline const ::std::string& request_body() const;
+  inline void set_request_body(const ::std::string& value);
+  inline void set_request_body(const char* value);
+  inline void set_request_body(const void* value, size_t size);
+  inline ::std::string* mutable_request_body();
+  inline ::std::string* release_request_body();
+  inline void set_allocated_request_body(::std::string* request_body);
 
   // @@protoc_insertion_point(class_scope:pbrpc.proto.RequestMsg)
  private:
@@ -281,17 +188,23 @@ class RequestMsg : public ::google::protobuf::Message {
   inline void clear_has_id();
   inline void set_has_type();
   inline void clear_has_type();
-  inline void set_has_normal_request();
-  inline void clear_has_normal_request();
+  inline void set_has_service_name();
+  inline void clear_has_service_name();
+  inline void set_has_method_name();
+  inline void clear_has_method_name();
+  inline void set_has_request_body();
+  inline void clear_has_request_body();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::int32 id_;
   int type_;
-  ::pbrpc::proto::NormalRequestBody* normal_request_;
+  ::std::string* service_name_;
+  ::std::string* method_name_;
+  ::std::string* request_body_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -299,180 +212,6 @@ class RequestMsg : public ::google::protobuf::Message {
 
   void InitAsDefaultInstance();
   static RequestMsg* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class SuccessResponseBody : public ::google::protobuf::Message {
- public:
-  SuccessResponseBody();
-  virtual ~SuccessResponseBody();
-
-  SuccessResponseBody(const SuccessResponseBody& from);
-
-  inline SuccessResponseBody& operator=(const SuccessResponseBody& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const SuccessResponseBody& default_instance();
-
-  void Swap(SuccessResponseBody* other);
-
-  // implements Message ----------------------------------------------
-
-  SuccessResponseBody* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const SuccessResponseBody& from);
-  void MergeFrom(const SuccessResponseBody& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // required bytes response_body = 1;
-  inline bool has_response_body() const;
-  inline void clear_response_body();
-  static const int kResponseBodyFieldNumber = 1;
-  inline const ::std::string& response_body() const;
-  inline void set_response_body(const ::std::string& value);
-  inline void set_response_body(const char* value);
-  inline void set_response_body(const void* value, size_t size);
-  inline ::std::string* mutable_response_body();
-  inline ::std::string* release_response_body();
-  inline void set_allocated_response_body(::std::string* response_body);
-
-  // @@protoc_insertion_point(class_scope:pbrpc.proto.SuccessResponseBody)
- private:
-  inline void set_has_response_body();
-  inline void clear_has_response_body();
-
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
-  ::std::string* response_body_;
-
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
-
-  friend void  protobuf_AddDesc_message_2eproto();
-  friend void protobuf_AssignDesc_message_2eproto();
-  friend void protobuf_ShutdownFile_message_2eproto();
-
-  void InitAsDefaultInstance();
-  static SuccessResponseBody* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class FailResponseBody : public ::google::protobuf::Message {
- public:
-  FailResponseBody();
-  virtual ~FailResponseBody();
-
-  FailResponseBody(const FailResponseBody& from);
-
-  inline FailResponseBody& operator=(const FailResponseBody& from) {
-    CopyFrom(from);
-    return *this;
-  }
-
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const FailResponseBody& default_instance();
-
-  void Swap(FailResponseBody* other);
-
-  // implements Message ----------------------------------------------
-
-  FailResponseBody* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const FailResponseBody& from);
-  void MergeFrom(const FailResponseBody& from);
-  void Clear();
-  bool IsInitialized() const;
-
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-
-  ::google::protobuf::Metadata GetMetadata() const;
-
-  // nested types ----------------------------------------------------
-
-  // accessors -------------------------------------------------------
-
-  // optional string error_text = 1;
-  inline bool has_error_text() const;
-  inline void clear_error_text();
-  static const int kErrorTextFieldNumber = 1;
-  inline const ::std::string& error_text() const;
-  inline void set_error_text(const ::std::string& value);
-  inline void set_error_text(const char* value);
-  inline void set_error_text(const char* value, size_t size);
-  inline ::std::string* mutable_error_text();
-  inline ::std::string* release_error_text();
-  inline void set_allocated_error_text(::std::string* error_text);
-
-  // @@protoc_insertion_point(class_scope:pbrpc.proto.FailResponseBody)
- private:
-  inline void set_has_error_text();
-  inline void clear_has_error_text();
-
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-
-  ::std::string* error_text_;
-
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
-
-  friend void  protobuf_AddDesc_message_2eproto();
-  friend void protobuf_AssignDesc_message_2eproto();
-  friend void protobuf_ShutdownFile_message_2eproto();
-
-  void InitAsDefaultInstance();
-  static FailResponseBody* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -544,23 +283,29 @@ class ResponseMsg : public ::google::protobuf::Message {
   inline ::pbrpc::proto::ResponseMsgType type() const;
   inline void set_type(::pbrpc::proto::ResponseMsgType value);
 
-  // optional .pbrpc.proto.SuccessResponseBody success_response = 10;
-  inline bool has_success_response() const;
-  inline void clear_success_response();
-  static const int kSuccessResponseFieldNumber = 10;
-  inline const ::pbrpc::proto::SuccessResponseBody& success_response() const;
-  inline ::pbrpc::proto::SuccessResponseBody* mutable_success_response();
-  inline ::pbrpc::proto::SuccessResponseBody* release_success_response();
-  inline void set_allocated_success_response(::pbrpc::proto::SuccessResponseBody* success_response);
+  // optional bytes response_body = 10;
+  inline bool has_response_body() const;
+  inline void clear_response_body();
+  static const int kResponseBodyFieldNumber = 10;
+  inline const ::std::string& response_body() const;
+  inline void set_response_body(const ::std::string& value);
+  inline void set_response_body(const char* value);
+  inline void set_response_body(const void* value, size_t size);
+  inline ::std::string* mutable_response_body();
+  inline ::std::string* release_response_body();
+  inline void set_allocated_response_body(::std::string* response_body);
 
-  // optional .pbrpc.proto.FailResponseBody error_response = 11;
-  inline bool has_error_response() const;
-  inline void clear_error_response();
-  static const int kErrorResponseFieldNumber = 11;
-  inline const ::pbrpc::proto::FailResponseBody& error_response() const;
-  inline ::pbrpc::proto::FailResponseBody* mutable_error_response();
-  inline ::pbrpc::proto::FailResponseBody* release_error_response();
-  inline void set_allocated_error_response(::pbrpc::proto::FailResponseBody* error_response);
+  // optional string error_text = 11;
+  inline bool has_error_text() const;
+  inline void clear_error_text();
+  static const int kErrorTextFieldNumber = 11;
+  inline const ::std::string& error_text() const;
+  inline void set_error_text(const ::std::string& value);
+  inline void set_error_text(const char* value);
+  inline void set_error_text(const char* value, size_t size);
+  inline ::std::string* mutable_error_text();
+  inline ::std::string* release_error_text();
+  inline void set_allocated_error_text(::std::string* error_text);
 
   // @@protoc_insertion_point(class_scope:pbrpc.proto.ResponseMsg)
  private:
@@ -568,17 +313,17 @@ class ResponseMsg : public ::google::protobuf::Message {
   inline void clear_has_id();
   inline void set_has_type();
   inline void clear_has_type();
-  inline void set_has_success_response();
-  inline void clear_has_success_response();
-  inline void set_has_error_response();
-  inline void clear_has_error_response();
+  inline void set_has_response_body();
+  inline void clear_has_response_body();
+  inline void set_has_error_text();
+  inline void clear_has_error_text();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::google::protobuf::int32 id_;
   int type_;
-  ::pbrpc::proto::SuccessResponseBody* success_response_;
-  ::pbrpc::proto::FailResponseBody* error_response_;
+  ::std::string* response_body_;
+  ::std::string* error_text_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
@@ -594,220 +339,6 @@ class ResponseMsg : public ::google::protobuf::Message {
 
 
 // ===================================================================
-
-// NormalRequestBody
-
-// required string service_name = 1;
-inline bool NormalRequestBody::has_service_name() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void NormalRequestBody::set_has_service_name() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void NormalRequestBody::clear_has_service_name() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void NormalRequestBody::clear_service_name() {
-  if (service_name_ != &::google::protobuf::internal::kEmptyString) {
-    service_name_->clear();
-  }
-  clear_has_service_name();
-}
-inline const ::std::string& NormalRequestBody::service_name() const {
-  return *service_name_;
-}
-inline void NormalRequestBody::set_service_name(const ::std::string& value) {
-  set_has_service_name();
-  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
-    service_name_ = new ::std::string;
-  }
-  service_name_->assign(value);
-}
-inline void NormalRequestBody::set_service_name(const char* value) {
-  set_has_service_name();
-  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
-    service_name_ = new ::std::string;
-  }
-  service_name_->assign(value);
-}
-inline void NormalRequestBody::set_service_name(const char* value, size_t size) {
-  set_has_service_name();
-  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
-    service_name_ = new ::std::string;
-  }
-  service_name_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* NormalRequestBody::mutable_service_name() {
-  set_has_service_name();
-  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
-    service_name_ = new ::std::string;
-  }
-  return service_name_;
-}
-inline ::std::string* NormalRequestBody::release_service_name() {
-  clear_has_service_name();
-  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = service_name_;
-    service_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void NormalRequestBody::set_allocated_service_name(::std::string* service_name) {
-  if (service_name_ != &::google::protobuf::internal::kEmptyString) {
-    delete service_name_;
-  }
-  if (service_name) {
-    set_has_service_name();
-    service_name_ = service_name;
-  } else {
-    clear_has_service_name();
-    service_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
-// required string method_name = 2;
-inline bool NormalRequestBody::has_method_name() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void NormalRequestBody::set_has_method_name() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void NormalRequestBody::clear_has_method_name() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline void NormalRequestBody::clear_method_name() {
-  if (method_name_ != &::google::protobuf::internal::kEmptyString) {
-    method_name_->clear();
-  }
-  clear_has_method_name();
-}
-inline const ::std::string& NormalRequestBody::method_name() const {
-  return *method_name_;
-}
-inline void NormalRequestBody::set_method_name(const ::std::string& value) {
-  set_has_method_name();
-  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
-    method_name_ = new ::std::string;
-  }
-  method_name_->assign(value);
-}
-inline void NormalRequestBody::set_method_name(const char* value) {
-  set_has_method_name();
-  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
-    method_name_ = new ::std::string;
-  }
-  method_name_->assign(value);
-}
-inline void NormalRequestBody::set_method_name(const char* value, size_t size) {
-  set_has_method_name();
-  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
-    method_name_ = new ::std::string;
-  }
-  method_name_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* NormalRequestBody::mutable_method_name() {
-  set_has_method_name();
-  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
-    method_name_ = new ::std::string;
-  }
-  return method_name_;
-}
-inline ::std::string* NormalRequestBody::release_method_name() {
-  clear_has_method_name();
-  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = method_name_;
-    method_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void NormalRequestBody::set_allocated_method_name(::std::string* method_name) {
-  if (method_name_ != &::google::protobuf::internal::kEmptyString) {
-    delete method_name_;
-  }
-  if (method_name) {
-    set_has_method_name();
-    method_name_ = method_name;
-  } else {
-    clear_has_method_name();
-    method_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
-// optional bytes request_body = 10;
-inline bool NormalRequestBody::has_request_body() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void NormalRequestBody::set_has_request_body() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void NormalRequestBody::clear_has_request_body() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void NormalRequestBody::clear_request_body() {
-  if (request_body_ != &::google::protobuf::internal::kEmptyString) {
-    request_body_->clear();
-  }
-  clear_has_request_body();
-}
-inline const ::std::string& NormalRequestBody::request_body() const {
-  return *request_body_;
-}
-inline void NormalRequestBody::set_request_body(const ::std::string& value) {
-  set_has_request_body();
-  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
-    request_body_ = new ::std::string;
-  }
-  request_body_->assign(value);
-}
-inline void NormalRequestBody::set_request_body(const char* value) {
-  set_has_request_body();
-  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
-    request_body_ = new ::std::string;
-  }
-  request_body_->assign(value);
-}
-inline void NormalRequestBody::set_request_body(const void* value, size_t size) {
-  set_has_request_body();
-  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
-    request_body_ = new ::std::string;
-  }
-  request_body_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* NormalRequestBody::mutable_request_body() {
-  set_has_request_body();
-  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
-    request_body_ = new ::std::string;
-  }
-  return request_body_;
-}
-inline ::std::string* NormalRequestBody::release_request_body() {
-  clear_has_request_body();
-  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = request_body_;
-    request_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void NormalRequestBody::set_allocated_request_body(::std::string* request_body) {
-  if (request_body_ != &::google::protobuf::internal::kEmptyString) {
-    delete request_body_;
-  }
-  if (request_body) {
-    set_has_request_body();
-    request_body_ = request_body;
-  } else {
-    clear_has_request_body();
-    request_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
-// -------------------------------------------------------------------
 
 // RequestMsg
 
@@ -856,189 +387,213 @@ inline void RequestMsg::set_type(::pbrpc::proto::RequestMsgType value) {
   type_ = value;
 }
 
-// optional .pbrpc.proto.NormalRequestBody normal_request = 10;
-inline bool RequestMsg::has_normal_request() const {
+// optional string service_name = 10;
+inline bool RequestMsg::has_service_name() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void RequestMsg::set_has_normal_request() {
+inline void RequestMsg::set_has_service_name() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void RequestMsg::clear_has_normal_request() {
+inline void RequestMsg::clear_has_service_name() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void RequestMsg::clear_normal_request() {
-  if (normal_request_ != NULL) normal_request_->::pbrpc::proto::NormalRequestBody::Clear();
-  clear_has_normal_request();
-}
-inline const ::pbrpc::proto::NormalRequestBody& RequestMsg::normal_request() const {
-  return normal_request_ != NULL ? *normal_request_ : *default_instance_->normal_request_;
-}
-inline ::pbrpc::proto::NormalRequestBody* RequestMsg::mutable_normal_request() {
-  set_has_normal_request();
-  if (normal_request_ == NULL) normal_request_ = new ::pbrpc::proto::NormalRequestBody;
-  return normal_request_;
-}
-inline ::pbrpc::proto::NormalRequestBody* RequestMsg::release_normal_request() {
-  clear_has_normal_request();
-  ::pbrpc::proto::NormalRequestBody* temp = normal_request_;
-  normal_request_ = NULL;
-  return temp;
-}
-inline void RequestMsg::set_allocated_normal_request(::pbrpc::proto::NormalRequestBody* normal_request) {
-  delete normal_request_;
-  normal_request_ = normal_request;
-  if (normal_request) {
-    set_has_normal_request();
-  } else {
-    clear_has_normal_request();
+inline void RequestMsg::clear_service_name() {
+  if (service_name_ != &::google::protobuf::internal::kEmptyString) {
+    service_name_->clear();
   }
+  clear_has_service_name();
 }
-
-// -------------------------------------------------------------------
-
-// SuccessResponseBody
-
-// required bytes response_body = 1;
-inline bool SuccessResponseBody::has_response_body() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
+inline const ::std::string& RequestMsg::service_name() const {
+  return *service_name_;
 }
-inline void SuccessResponseBody::set_has_response_body() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void SuccessResponseBody::clear_has_response_body() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void SuccessResponseBody::clear_response_body() {
-  if (response_body_ != &::google::protobuf::internal::kEmptyString) {
-    response_body_->clear();
+inline void RequestMsg::set_service_name(const ::std::string& value) {
+  set_has_service_name();
+  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
+    service_name_ = new ::std::string;
   }
-  clear_has_response_body();
+  service_name_->assign(value);
 }
-inline const ::std::string& SuccessResponseBody::response_body() const {
-  return *response_body_;
-}
-inline void SuccessResponseBody::set_response_body(const ::std::string& value) {
-  set_has_response_body();
-  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
-    response_body_ = new ::std::string;
+inline void RequestMsg::set_service_name(const char* value) {
+  set_has_service_name();
+  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
+    service_name_ = new ::std::string;
   }
-  response_body_->assign(value);
+  service_name_->assign(value);
 }
-inline void SuccessResponseBody::set_response_body(const char* value) {
-  set_has_response_body();
-  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
-    response_body_ = new ::std::string;
+inline void RequestMsg::set_service_name(const char* value, size_t size) {
+  set_has_service_name();
+  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
+    service_name_ = new ::std::string;
   }
-  response_body_->assign(value);
+  service_name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline void SuccessResponseBody::set_response_body(const void* value, size_t size) {
-  set_has_response_body();
-  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
-    response_body_ = new ::std::string;
+inline ::std::string* RequestMsg::mutable_service_name() {
+  set_has_service_name();
+  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
+    service_name_ = new ::std::string;
   }
-  response_body_->assign(reinterpret_cast<const char*>(value), size);
+  return service_name_;
 }
-inline ::std::string* SuccessResponseBody::mutable_response_body() {
-  set_has_response_body();
-  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
-    response_body_ = new ::std::string;
-  }
-  return response_body_;
-}
-inline ::std::string* SuccessResponseBody::release_response_body() {
-  clear_has_response_body();
-  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
+inline ::std::string* RequestMsg::release_service_name() {
+  clear_has_service_name();
+  if (service_name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
   } else {
-    ::std::string* temp = response_body_;
-    response_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    ::std::string* temp = service_name_;
+    service_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
     return temp;
   }
 }
-inline void SuccessResponseBody::set_allocated_response_body(::std::string* response_body) {
-  if (response_body_ != &::google::protobuf::internal::kEmptyString) {
-    delete response_body_;
+inline void RequestMsg::set_allocated_service_name(::std::string* service_name) {
+  if (service_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete service_name_;
   }
-  if (response_body) {
-    set_has_response_body();
-    response_body_ = response_body;
+  if (service_name) {
+    set_has_service_name();
+    service_name_ = service_name;
   } else {
-    clear_has_response_body();
-    response_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    clear_has_service_name();
+    service_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
 }
 
-// -------------------------------------------------------------------
-
-// FailResponseBody
-
-// optional string error_text = 1;
-inline bool FailResponseBody::has_error_text() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
+// optional string method_name = 11;
+inline bool RequestMsg::has_method_name() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void FailResponseBody::set_has_error_text() {
-  _has_bits_[0] |= 0x00000001u;
+inline void RequestMsg::set_has_method_name() {
+  _has_bits_[0] |= 0x00000008u;
 }
-inline void FailResponseBody::clear_has_error_text() {
-  _has_bits_[0] &= ~0x00000001u;
+inline void RequestMsg::clear_has_method_name() {
+  _has_bits_[0] &= ~0x00000008u;
 }
-inline void FailResponseBody::clear_error_text() {
-  if (error_text_ != &::google::protobuf::internal::kEmptyString) {
-    error_text_->clear();
+inline void RequestMsg::clear_method_name() {
+  if (method_name_ != &::google::protobuf::internal::kEmptyString) {
+    method_name_->clear();
   }
-  clear_has_error_text();
+  clear_has_method_name();
 }
-inline const ::std::string& FailResponseBody::error_text() const {
-  return *error_text_;
+inline const ::std::string& RequestMsg::method_name() const {
+  return *method_name_;
 }
-inline void FailResponseBody::set_error_text(const ::std::string& value) {
-  set_has_error_text();
-  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
-    error_text_ = new ::std::string;
+inline void RequestMsg::set_method_name(const ::std::string& value) {
+  set_has_method_name();
+  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
+    method_name_ = new ::std::string;
   }
-  error_text_->assign(value);
+  method_name_->assign(value);
 }
-inline void FailResponseBody::set_error_text(const char* value) {
-  set_has_error_text();
-  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
-    error_text_ = new ::std::string;
+inline void RequestMsg::set_method_name(const char* value) {
+  set_has_method_name();
+  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
+    method_name_ = new ::std::string;
   }
-  error_text_->assign(value);
+  method_name_->assign(value);
 }
-inline void FailResponseBody::set_error_text(const char* value, size_t size) {
-  set_has_error_text();
-  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
-    error_text_ = new ::std::string;
+inline void RequestMsg::set_method_name(const char* value, size_t size) {
+  set_has_method_name();
+  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
+    method_name_ = new ::std::string;
   }
-  error_text_->assign(reinterpret_cast<const char*>(value), size);
+  method_name_->assign(reinterpret_cast<const char*>(value), size);
 }
-inline ::std::string* FailResponseBody::mutable_error_text() {
-  set_has_error_text();
-  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
-    error_text_ = new ::std::string;
+inline ::std::string* RequestMsg::mutable_method_name() {
+  set_has_method_name();
+  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
+    method_name_ = new ::std::string;
   }
-  return error_text_;
+  return method_name_;
 }
-inline ::std::string* FailResponseBody::release_error_text() {
-  clear_has_error_text();
-  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
+inline ::std::string* RequestMsg::release_method_name() {
+  clear_has_method_name();
+  if (method_name_ == &::google::protobuf::internal::kEmptyString) {
     return NULL;
   } else {
-    ::std::string* temp = error_text_;
-    error_text_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    ::std::string* temp = method_name_;
+    method_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
     return temp;
   }
 }
-inline void FailResponseBody::set_allocated_error_text(::std::string* error_text) {
-  if (error_text_ != &::google::protobuf::internal::kEmptyString) {
-    delete error_text_;
+inline void RequestMsg::set_allocated_method_name(::std::string* method_name) {
+  if (method_name_ != &::google::protobuf::internal::kEmptyString) {
+    delete method_name_;
   }
-  if (error_text) {
-    set_has_error_text();
-    error_text_ = error_text;
+  if (method_name) {
+    set_has_method_name();
+    method_name_ = method_name;
   } else {
-    clear_has_error_text();
-    error_text_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    clear_has_method_name();
+    method_name_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
+}
+
+// optional bytes request_body = 12;
+inline bool RequestMsg::has_request_body() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void RequestMsg::set_has_request_body() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void RequestMsg::clear_has_request_body() {
+  _has_bits_[0] &= ~0x00000010u;
+}
+inline void RequestMsg::clear_request_body() {
+  if (request_body_ != &::google::protobuf::internal::kEmptyString) {
+    request_body_->clear();
+  }
+  clear_has_request_body();
+}
+inline const ::std::string& RequestMsg::request_body() const {
+  return *request_body_;
+}
+inline void RequestMsg::set_request_body(const ::std::string& value) {
+  set_has_request_body();
+  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
+    request_body_ = new ::std::string;
+  }
+  request_body_->assign(value);
+}
+inline void RequestMsg::set_request_body(const char* value) {
+  set_has_request_body();
+  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
+    request_body_ = new ::std::string;
+  }
+  request_body_->assign(value);
+}
+inline void RequestMsg::set_request_body(const void* value, size_t size) {
+  set_has_request_body();
+  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
+    request_body_ = new ::std::string;
+  }
+  request_body_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* RequestMsg::mutable_request_body() {
+  set_has_request_body();
+  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
+    request_body_ = new ::std::string;
+  }
+  return request_body_;
+}
+inline ::std::string* RequestMsg::release_request_body() {
+  clear_has_request_body();
+  if (request_body_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = request_body_;
+    request_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void RequestMsg::set_allocated_request_body(::std::string* request_body) {
+  if (request_body_ != &::google::protobuf::internal::kEmptyString) {
+    delete request_body_;
+  }
+  if (request_body) {
+    set_has_request_body();
+    request_body_ = request_body;
+  } else {
+    clear_has_request_body();
+    request_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
 }
 
@@ -1091,79 +646,143 @@ inline void ResponseMsg::set_type(::pbrpc::proto::ResponseMsgType value) {
   type_ = value;
 }
 
-// optional .pbrpc.proto.SuccessResponseBody success_response = 10;
-inline bool ResponseMsg::has_success_response() const {
+// optional bytes response_body = 10;
+inline bool ResponseMsg::has_response_body() const {
   return (_has_bits_[0] & 0x00000004u) != 0;
 }
-inline void ResponseMsg::set_has_success_response() {
+inline void ResponseMsg::set_has_response_body() {
   _has_bits_[0] |= 0x00000004u;
 }
-inline void ResponseMsg::clear_has_success_response() {
+inline void ResponseMsg::clear_has_response_body() {
   _has_bits_[0] &= ~0x00000004u;
 }
-inline void ResponseMsg::clear_success_response() {
-  if (success_response_ != NULL) success_response_->::pbrpc::proto::SuccessResponseBody::Clear();
-  clear_has_success_response();
+inline void ResponseMsg::clear_response_body() {
+  if (response_body_ != &::google::protobuf::internal::kEmptyString) {
+    response_body_->clear();
+  }
+  clear_has_response_body();
 }
-inline const ::pbrpc::proto::SuccessResponseBody& ResponseMsg::success_response() const {
-  return success_response_ != NULL ? *success_response_ : *default_instance_->success_response_;
+inline const ::std::string& ResponseMsg::response_body() const {
+  return *response_body_;
 }
-inline ::pbrpc::proto::SuccessResponseBody* ResponseMsg::mutable_success_response() {
-  set_has_success_response();
-  if (success_response_ == NULL) success_response_ = new ::pbrpc::proto::SuccessResponseBody;
-  return success_response_;
+inline void ResponseMsg::set_response_body(const ::std::string& value) {
+  set_has_response_body();
+  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
+    response_body_ = new ::std::string;
+  }
+  response_body_->assign(value);
 }
-inline ::pbrpc::proto::SuccessResponseBody* ResponseMsg::release_success_response() {
-  clear_has_success_response();
-  ::pbrpc::proto::SuccessResponseBody* temp = success_response_;
-  success_response_ = NULL;
-  return temp;
+inline void ResponseMsg::set_response_body(const char* value) {
+  set_has_response_body();
+  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
+    response_body_ = new ::std::string;
+  }
+  response_body_->assign(value);
 }
-inline void ResponseMsg::set_allocated_success_response(::pbrpc::proto::SuccessResponseBody* success_response) {
-  delete success_response_;
-  success_response_ = success_response;
-  if (success_response) {
-    set_has_success_response();
+inline void ResponseMsg::set_response_body(const void* value, size_t size) {
+  set_has_response_body();
+  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
+    response_body_ = new ::std::string;
+  }
+  response_body_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ResponseMsg::mutable_response_body() {
+  set_has_response_body();
+  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
+    response_body_ = new ::std::string;
+  }
+  return response_body_;
+}
+inline ::std::string* ResponseMsg::release_response_body() {
+  clear_has_response_body();
+  if (response_body_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
   } else {
-    clear_has_success_response();
+    ::std::string* temp = response_body_;
+    response_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void ResponseMsg::set_allocated_response_body(::std::string* response_body) {
+  if (response_body_ != &::google::protobuf::internal::kEmptyString) {
+    delete response_body_;
+  }
+  if (response_body) {
+    set_has_response_body();
+    response_body_ = response_body;
+  } else {
+    clear_has_response_body();
+    response_body_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
 }
 
-// optional .pbrpc.proto.FailResponseBody error_response = 11;
-inline bool ResponseMsg::has_error_response() const {
+// optional string error_text = 11;
+inline bool ResponseMsg::has_error_text() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void ResponseMsg::set_has_error_response() {
+inline void ResponseMsg::set_has_error_text() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void ResponseMsg::clear_has_error_response() {
+inline void ResponseMsg::clear_has_error_text() {
   _has_bits_[0] &= ~0x00000008u;
 }
-inline void ResponseMsg::clear_error_response() {
-  if (error_response_ != NULL) error_response_->::pbrpc::proto::FailResponseBody::Clear();
-  clear_has_error_response();
+inline void ResponseMsg::clear_error_text() {
+  if (error_text_ != &::google::protobuf::internal::kEmptyString) {
+    error_text_->clear();
+  }
+  clear_has_error_text();
 }
-inline const ::pbrpc::proto::FailResponseBody& ResponseMsg::error_response() const {
-  return error_response_ != NULL ? *error_response_ : *default_instance_->error_response_;
+inline const ::std::string& ResponseMsg::error_text() const {
+  return *error_text_;
 }
-inline ::pbrpc::proto::FailResponseBody* ResponseMsg::mutable_error_response() {
-  set_has_error_response();
-  if (error_response_ == NULL) error_response_ = new ::pbrpc::proto::FailResponseBody;
-  return error_response_;
+inline void ResponseMsg::set_error_text(const ::std::string& value) {
+  set_has_error_text();
+  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
+    error_text_ = new ::std::string;
+  }
+  error_text_->assign(value);
 }
-inline ::pbrpc::proto::FailResponseBody* ResponseMsg::release_error_response() {
-  clear_has_error_response();
-  ::pbrpc::proto::FailResponseBody* temp = error_response_;
-  error_response_ = NULL;
-  return temp;
+inline void ResponseMsg::set_error_text(const char* value) {
+  set_has_error_text();
+  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
+    error_text_ = new ::std::string;
+  }
+  error_text_->assign(value);
 }
-inline void ResponseMsg::set_allocated_error_response(::pbrpc::proto::FailResponseBody* error_response) {
-  delete error_response_;
-  error_response_ = error_response;
-  if (error_response) {
-    set_has_error_response();
+inline void ResponseMsg::set_error_text(const char* value, size_t size) {
+  set_has_error_text();
+  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
+    error_text_ = new ::std::string;
+  }
+  error_text_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ResponseMsg::mutable_error_text() {
+  set_has_error_text();
+  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
+    error_text_ = new ::std::string;
+  }
+  return error_text_;
+}
+inline ::std::string* ResponseMsg::release_error_text() {
+  clear_has_error_text();
+  if (error_text_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
   } else {
-    clear_has_error_response();
+    ::std::string* temp = error_text_;
+    error_text_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void ResponseMsg::set_allocated_error_text(::std::string* error_text) {
+  if (error_text_ != &::google::protobuf::internal::kEmptyString) {
+    delete error_text_;
+  }
+  if (error_text) {
+    set_has_error_text();
+    error_text_ = error_text;
+  } else {
+    clear_has_error_text();
+    error_text_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
 }
 

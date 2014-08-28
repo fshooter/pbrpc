@@ -1,39 +1,31 @@
-option cc_generic_services = true;
-
 package pbrpc.proto;
 
+// 消息类型
 enum RequestMsgType {
-    NORMAL = 0;
-    CANCEL = 1;
+    NORMAL = 0; // 普通RPC请求
+    CANCEL = 1; // 取消RPC请求
 }
 
-message NormalRequestBody {
-    required string service_name = 1;
-    required string method_name = 2;
-    optional bytes request_body = 10;
-}
-
+// 请求消息,仅会由客户端发送至服务端
 message RequestMsg {
-    required int32 id = 1;
-    required RequestMsgType type = 2;
-    optional NormalRequestBody normal_request = 10;  
+	// RPC ID,对于一个特定的连接,每一个RPC请求的ID必须是唯一的
+	// CANCEL消息的ID应当和该RPC的NORMAL消息的ID一致
+    required int32 id = 1; 
+    required RequestMsgType type = 2; // 消息类型
+    optional string service_name = 10; // 服务名,在NORMAL消息中有效
+	optional string method_name = 11; // 方法名,在NORMAL消息中有效
+	optional bytes request_body = 12; // 序列化后的参数,在NORMAL消息中有效
 }
 
+// 响应类型
 enum ResponseMsgType {
-    SUCCESS = 0;
-    FAIL = 1;
-}
-
-message SuccessResponseBody {
-    required bytes response_body = 1;
-}
-message FailResponseBody {
-    optional string error_text = 1;
+    SUCCESS = 0; // 成功
+    FAIL = 1; // 失败
 }
 
 message ResponseMsg {
-    required int32 id = 1;
-    required ResponseMsgType type = 2;
-    optional SuccessResponseBody success_response = 10;
-    optional FailResponseBody error_response = 11;
+    required int32 id = 1; // RPC ID,和该RPC的请求消息的ID一致
+    required ResponseMsgType type = 2; // 消息类型
+    optional bytes response_body = 10; // 序列化后的响应,在SUCCESS消息中有效
+    optional string error_text = 11; // 失败原因,在FAIL消息中有效
 }

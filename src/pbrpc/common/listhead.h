@@ -1,5 +1,6 @@
 #ifndef _PBRPC_SERVER_C_LIST_H__
 #define _PBRPC_SERVER_C_LIST_H__
+#include <pbrpc/config.h>
 
 namespace pbrpc {
 namespace common {

@@ -1,3 +1,8 @@
+/*!
+ * @file wintcprpclistener.h
+ * @brief Windows平台下RPC监听器实现文件
+ */
+#include <pbrpc/config.h>
 #include "wintcprpclistener.h"
 #include "wintcprpclistenerimpl.h"
 

@@ -4,6 +4,7 @@
 */
 #ifndef _LOG_H__
 #define _LOG_H__
+#include <pbrpc/config.h>
 
 namespace pbrpc {
 namespace common {
@@ -25,12 +26,12 @@ static const int MAX_BUF_SIZE = 1023;
 /// @see TraceVerbose TraceDebug TraceInfo TraceWarning TraceError
 void Log(LogLevel level, const char* fmt, ...);
 
-/// @brief 发送不可修复的关键性错误
+/// @brief 发生不可修复的关键性错误
 ///
 /// 本函数将中止程序执行
 void Fetal(const char* fmt, ...);
 
-#ifdef TCL_ENABLE_LOG
+#ifdef PBRPC_ENABLE_LOG
 #define Trace(Level, Format, ...) ::pbrpc::common::Log(Level, Format, __VA_ARGS__)
 #else
 #define Trace(Level, Format, ...)

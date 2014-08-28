@@ -58,6 +58,9 @@
     <ClInclude Include="..\src\pbrpc\server\rpcserver.h">
       <Filter>src.pbrpc\server</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\pbrpc\config.h">
+      <Filter>src.pbrpc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\pbrpc\proto\message.pb.cc">
@@ -86,6 +89,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\message.proto" />
+    <None Include="..\src\pbrpc\proto\message.proto">
+      <Filter>src.pbrpc\proto</Filter>
+    </None>
   </ItemGroup>
 </Project>

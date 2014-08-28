@@ -67,14 +67,20 @@ int main(int argc, char** argv) {
         request.add_nums(tmp);
     }
 
-    SimpleTcpChannel channel;
-    if (channel.Init(host, port) != Error::E_OK) {
-        printf("channel init failed\n");
+    SimpleTcpChannelPool channelPool;
+    if (channelPool.Init(host, port) != Error::E_OK) {
+        printf("channel pool init failed\n");
+        return -1;
+    }
+
+    SimpleTcpChannel* channel = channelPool.GetChannel();
+    if (!channel) {
+        printf("GetChannel failed\n");
         return -1;
     }
 
     SimpleTcpRpcController controller;
-    CalcService::Stub stub(&channel);
+    CalcService::Stub stub(channel);
     CalcResponse response;
 
     stub.Calc(&controller, &request, &response, NewCallback(handleResponse));
@@ -85,6 +91,8 @@ int main(int argc, char** argv) {
     else {
         printf("result is %d\n", response.result());
     }
+
+    channelPool.ReleaseChannel(channel);
     
     return 0;
 }

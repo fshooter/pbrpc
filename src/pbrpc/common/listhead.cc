@@ -1,3 +1,4 @@
+#include <pbrpc/config.h>
 #include "listhead.h"
 
 namespace pbrpc {

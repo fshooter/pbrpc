@@ -16,6 +16,7 @@
     <ClInclude Include="..\src\pbrpc\common\listhead.h" />
     <ClInclude Include="..\src\pbrpc\common\log.h" />
     <ClInclude Include="..\src\pbrpc\common\sentry.h" />
+    <ClInclude Include="..\src\pbrpc\config.h" />
     <ClInclude Include="..\src\pbrpc\error.h" />
     <ClInclude Include="..\src\pbrpc\proto\message.pb.h" />
     <ClInclude Include="..\src\pbrpc\server\rpclistener.h" />
@@ -35,7 +36,7 @@
     <ClCompile Include="..\src\pbrpc\server\wintcprpclistenerimpl.cc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\message.proto" />
+    <None Include="..\src\pbrpc\proto\message.proto" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{19B3FC06-FF34-4423-BF48-4D9B71BFD4E3}</ProjectGuid>
