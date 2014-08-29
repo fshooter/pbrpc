@@ -69,8 +69,9 @@ private:
     int maxChannelNum_;
     int channelTimeout_;
     CRITICAL_SECTION lock_;
-    std::vector<ChannelContext*> freeChannels_;
-    std::vector<ChannelContext*> busyChannels_;
+    typedef std::vector<ChannelContext*> ChannelContextVector;
+    ChannelContextVector freeChannels_;
+    ChannelContextVector busyChannels_;
 };
 
 }

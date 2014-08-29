@@ -2,6 +2,7 @@
 *.opensdf
 *.suo
 *.user
+*.ncb
 
 vsprojects/Debug/*
 vsprojects/Release/*

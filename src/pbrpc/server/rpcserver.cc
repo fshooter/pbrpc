@@ -84,7 +84,8 @@ private:
 
     RpcListener* listener_;
 
-    std::map<std::string, Service*> services_;
+    typedef std::map<std::string, Service*> ServiceMap;
+    ServiceMap services_;
     CRITICAL_SECTION servicesLock_;
 
     HANDLE methodCallsSemaphore_;
@@ -125,7 +126,7 @@ Error RpcServer::Impl::Init(RpcListener* listener)
     if (err != Error::E_OK)
         return err;
 
-    methodCallsSemaphore_ = CreateSemaphore(NULL, 0, INT32_MAX, NULL);
+    methodCallsSemaphore_ = CreateSemaphore(NULL, 0, 0x7FFFFFFF, NULL);
     if (!methodCallsSemaphore_) {
         listener_->SetMethodCallback(NULL);
         return Error::E_WIN32_ERR;
@@ -211,7 +212,7 @@ Error RpcServer::Impl::Stop() {
 
 Service* RpcServer::Impl::QueryService(const std::string& serviceName)
 {
-    auto it = services_.find(serviceName);
+    ServiceMap::iterator it = services_.find(serviceName);
     if (it == services_.end())
         return NULL;
     return it->second;

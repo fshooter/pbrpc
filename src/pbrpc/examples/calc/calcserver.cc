@@ -23,7 +23,7 @@ public:
         ::google::protobuf::Closure* done)
     {
         int result = 0;
-        for (auto it = request->nums().begin();
+        for (RepeatedField<::google::protobuf::int32>::const_iterator it = request->nums().begin();
             it != request->nums().end();
             ++it) {
             result += *it;
@@ -56,7 +56,7 @@ int main(int argc, char** argv) {
             break;
         case 'p':
             if (sscanf(optarg, "%d", &tmp) != 1 ||
-                tmp >= INT16_MAX) {
+                tmp >= 0x7FFF) {
                 printf("invalid port\n");
                 return -1;
             }

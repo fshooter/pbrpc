@@ -183,7 +183,7 @@ SimpleTcpChannelPool::Impl::~Impl()
 
     assert(busyChannels_.empty());
 
-    for (auto it = freeChannels_.begin();
+    for (ChannelContextVector::iterator it = freeChannels_.begin();
         it != freeChannels_.end();
         ++it)
     {
@@ -228,7 +228,7 @@ SimpleTcpChannel* SimpleTcpChannelPool::Impl::GetChannel()
 
     // 关闭所有空闲太久的Channel
 redo:
-    for (auto it = freeChannels_.begin();
+    for (ChannelContextVector::iterator it = freeChannels_.begin();
         it != freeChannels_.end();
         ++it)
     {
@@ -242,7 +242,7 @@ redo:
 
     ChannelContext* targetContext = NULL;
     while (!freeChannels_.empty()) {
-        auto it = freeChannels_.begin();
+        ChannelContextVector::iterator it = freeChannels_.begin();
         if ((*it)->channel_->Bad()) {
             delete (*it)->channel_;
             delete *it;
@@ -289,7 +289,7 @@ Error SimpleTcpChannelPool::Impl::ReleaseChannel(SimpleTcpChannel* channel)
 
     // 关闭所有空闲太久的Channel
 redo:
-    for (auto it = freeChannels_.begin();
+    for (ChannelContextVector::iterator it = freeChannels_.begin();
         it != freeChannels_.end();
         ++it)
     {
@@ -303,7 +303,7 @@ redo:
 
     // 找到Channel的上下文并从Busy列表中移除
     ChannelContext* targetContext = NULL;
-    for (auto it = busyChannels_.begin();
+    for (ChannelContextVector::iterator it = busyChannels_.begin();
         it != busyChannels_.end();
         ++it)
     {
